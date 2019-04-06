@@ -138,7 +138,7 @@ module_function
     sum = 0
     f.printf "  %%   cumulative   self              self     total\n"
     f.printf " time   seconds   seconds    calls  ms/call  ms/call  name\n"
-    for d in data
+    data.each do |d|
       sum += d[2]
       f.printf "%6.2f %8.2f  %8.2f %8d ", d[2]/total*100, sum, d[2], d[0]
       f.printf "%8.2f %8.2f  %s\n", d[2]*1000/d[0], d[1]*1000/d[0], d[3]
