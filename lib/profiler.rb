@@ -49,14 +49,14 @@
 #
 #     %   cumulative   self              self     total
 #    time   seconds   seconds    calls  ms/call  ms/call  name
-#    68.42     0.13      0.13        2    65.00    95.00  Integer#times
-#    15.79     0.16      0.03     5000     0.01     0.01  Fixnum#*
-#    15.79     0.19      0.03     5000     0.01     0.01  Fixnum#+
-#     0.00     0.19      0.00        2     0.00     0.00  IO#set_encoding
-#     0.00     0.19      0.00        1     0.00   100.00  Object#slow_method
-#     0.00     0.19      0.00        2     0.00     0.00  Module#method_added
-#     0.00     0.19      0.00        1     0.00    90.00  Object#fast_method
-#     0.00     0.19      0.00        1     0.00   190.00  #toplevel
+#    38.72     0.00      0.00        1     1.86     1.86  TracePoint#__enable
+#    12.47     0.00      0.00        2     0.30     0.30  Integer#times
+#     0.73     0.00      0.00        1     0.04     0.42  Object#slow_method
+#     0.63     0.00      0.00        1     0.03     1.89  TracePoint#enable
+#     0.50     0.00      0.00        1     0.02     0.24  Object#fast_method
+#     0.13     0.00      0.00        2     0.00     0.00  Module#method_added
+#     0.08     0.00      0.00        1     0.00     0.00  TracePoint#disable
+#     0.00     0.00      0.00        1     0.00     4.79  #toplevel
 
 module Profiler__
   class Wrapper < Struct.new(:defined_class, :method_id, :hash) # :nodoc:
@@ -77,12 +77,12 @@ module Profiler__
   @@start = nil # the start time that profiling began
   @@stacks = nil # the map of stacks keyed by thread
   @@maps = nil # the map of call data keyed by thread, class and id. Call data contains the call count, total time,
-  PROFILE_CALL_PROC = TracePoint.new(*%i[call c_call b_call]) {|tp| # :nodoc:
+  PROFILE_CALL_PROC = TracePoint.new(*%i[call c_call]) {|tp| # :nodoc:
     now = Process.times[0]
     stack = (@@stacks[Thread.current] ||= [])
     stack.push [now, 0.0]
   }
-  PROFILE_RETURN_PROC = TracePoint.new(*%i[return c_return b_return]) {|tp| # :nodoc:
+  PROFILE_RETURN_PROC = TracePoint.new(*%i[return c_return]) {|tp| # :nodoc:
     now = Process.times[0]
     key = Wrapper.new(tp.defined_class, tp.method_id)
     stack = (@@stacks[Thread.current] ||= [])
@@ -138,7 +138,7 @@ module_function
     sum = 0
     f.printf "  %%   cumulative   self              self     total\n"
     f.printf " time   seconds   seconds    calls  ms/call  ms/call  name\n"
-    for d in data
+    data.each do |d|
       sum += d[2]
       f.printf "%6.2f %8.2f  %8.2f %8d ", d[2]/total*100, sum, d[2], d[0]
       f.printf "%8.2f %8.2f  %s\n", d[2]*1000/d[0], d[1]*1000/d[0], d[3]
