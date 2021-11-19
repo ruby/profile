@@ -73,16 +73,49 @@ The output in both cases is a report when the execution is over:
 ```
 $ ruby -rprofile example.rb
 
- %   cumulative   self              self     total
-time   seconds   seconds    calls  ms/call  ms/call  name
-68.42     0.13      0.13        2    65.00    95.00  Integer#times
-15.79     0.16      0.03     5000     0.01     0.01  Fixnum#*
-15.79     0.19      0.03     5000     0.01     0.01  Fixnum#+
- 0.00     0.19      0.00        2     0.00     0.00  IO#set_encoding
- 0.00     0.19      0.00        1     0.00   100.00  Object#slow_method
- 0.00     0.19      0.00        2     0.00     0.00  Module#method_added
- 0.00     0.19      0.00        1     0.00    90.00  Object#fast_method
- 0.00     0.19      0.00        1     0.00   190.00  #toplevel
+  %   cumulative   self              self     total
+ time   seconds   seconds    calls  ms/call  ms/call  name
+ 68.42     0.13      0.13        2    65.00    95.00  Integer#times
+ 15.79     0.16      0.03     5000     0.01     0.01  Fixnum#*
+ 15.79     0.19      0.03     5000     0.01     0.01  Fixnum#+
+  0.00     0.19      0.00        2     0.00     0.00  IO#set_encoding
+  0.00     0.19      0.00        1     0.00   100.00  Object#slow_method
+  0.00     0.19      0.00        2     0.00     0.00  Module#method_added
+  0.00     0.19      0.00        1     0.00    90.00  Object#fast_method
+  0.00     0.19      0.00        1     0.00   190.00  #toplevel
+```
+
+#### It is also possible to profile only a piece of code
+
+```
+require 'profiler'
+
+def method_0
+  Array.new
+end
+
+def method_1
+  Hash.new
+end
+
+Profiler__::start_profile
+method_0
+Profiler__::print_profile(STDERR)
+
+method_1
+```
+
+```
+$ ruby example.rb
+
+  %   cumulative   self              self     total
+ time   seconds   seconds    calls  ms/call  ms/call  name
+ 44.02     0.00      0.00        1     0.66     0.66  TracePoint#enable
+  0.54     0.00      0.00        1     0.01     0.01  Class#new
+  0.54     0.00      0.00        1     0.01     0.02  Object#method_0
+  0.07     0.00      0.00        1     0.00     0.00  TracePoint#disable
+  0.07     0.00      0.00        1     0.00     0.00  Array#initialize
+  0.00     0.00      0.00        1     0.00     1.49  #toplevel
 ```
 
 ## Development
