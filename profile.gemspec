@@ -11,6 +11,7 @@ Gem::Specification.new do |spec|
   spec.summary       = %q{Profile provides a way to Profile your Ruby application.}
   spec.description   = %q{Profile provides a way to Profile your Ruby application.}
   spec.homepage      = "https://github.com/ruby/profile"
+  spec.licenses      = ['Ruby', 'BSD-2-Clause']
 
   spec.metadata["homepage_uri"] = spec.homepage
   spec.metadata["source_code_uri"] = "https://github.com/ruby/profile.git"
